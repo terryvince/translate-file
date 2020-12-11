@@ -1,0 +1,44 @@
+// @mixin grid($count:4,$itemWidth:20,$itemHeight:auto){
+// 	$rest:100 - $itemWidth * $count; // 剩余空间
+// 	$space:percentage($rest/($count - 1)/100); // 边距
+// 	display: flex;
+// 	flex-wrap: wrap;
+// 	& > view {
+// 		flex: 0 0 #{$itemWidth + '%'};
+// 		height: $itemHeight;
+// 		margin-right: $space;
+// 		margin-top: $space;
+// 		box-sizing: border-box;
+// 		&:nth-child(#{$count}n){
+// 			margin-right: 0;
+// 		}
+// 		&:nth-child(-n + #{$count}){
+// 			margin-top: 0;
+// 		}
+// 		&:last-child{
+// 			margin-right: auto;
+// 		}
+// 	}
+// }
+
+.grid(@count:4,@itemWidth:20,@itemHeight:auto){
+	@rest:100 - @itemWidth * @count; // 剩余空间
+	@space: @rest/(@count - 1) * 1%; // 边距
+	display: flex;
+	& > view {
+		flex: 0 0 @itemWidth * 1%;
+		height: @itemHeight;
+		margin-right: @space;
+		margin-top: @space;
+		box-sizing: border-box;
+		&:nth-child( @{count}n ){
+			margin-right: 0;
+		}
+		&:nth-child( -n + @{count} ){
+			margin-top: 0;
+		}
+		&:last-child{
+			margin-right: auto;
+		}
+	}
+}

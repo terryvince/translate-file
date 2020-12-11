@@ -1,0 +1,487 @@
+// 项目公用样式
+
+// 通用的颜色
+.color-white{
+  color: white;
+}
+.color-success{
+  color:#67C23A;
+}
+.color-warning{
+  color:#C99300;
+}
+.color-primary{
+  color:#00C65D;
+}
+.color-cyan{
+	color: #09BD93;
+}
+.color-orange{
+	color: #FF9624;
+}
+// 右箭头灰
+.color-arrow{
+	color: #B5B5B5;
+}
+
+.color-placeholder{
+	color: #909090;
+}
+// 文本色
+// 危险色
+.color-danger{
+  color:#FF3934;
+}
+// 黑
+.color-title{
+  color: #071227;
+}
+// 文本色
+.color-text{
+	color: #303030;
+}
+.color-type{
+	color: #64CE5E;
+}
+.color-number{
+	color: #636363;
+}
+// 次级文本
+.color-text-secondary{
+	color: #7C7979;
+}
+// 文本灰
+.color-gray{
+	color: #909090;
+}
+// 文本次级灰
+.color-light-gray{
+	color: #ADAFBB;
+}
+.color-red{
+	color: #F0584B;
+}
+// 背景色
+// 危险色
+.bg-danger{
+	background: #F16355;
+}
+.bg-primary{
+	background-color: #00C65D;
+	&.disabled{
+		background-color: fade(#00C65D,40);
+	}
+}
+.bg-white {
+  background: #fff!important;
+}
+.bg-black{
+  background: #000000;
+}
+// 背景灰
+.bg-gray{
+  background: #F5F5F5;
+}
+
+// 圆角
+.boder-radius{
+	border-radius: 10rpx;
+}
+// 固定搜索栏
+.fixed-search-bar{
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 98rpx;
+	background: #fff;
+	z-index: 99;
+}
+
+// 带删除线
+.del-line{
+	position: relative;
+	&::after{
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+		transform: translate(0,-50%);
+		width: 100%;
+		height: 2rpx;
+		background: #9E9E9E;
+	}
+}
+.del-price-line{
+	position: relative;
+	&::after{
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		margin: auto;
+		transform: translate(0,-50%);
+		width: 100%;
+		height: 2rpx;
+		background: #fff;
+	}
+}
+// 竖线
+.y-line{
+	position: relative;
+	&::after{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 2rpx;
+		height: 100%;
+		background: white;
+		transform: scaleX(.5);
+	}
+	&.gray::after{
+		background:#F5F5F5;
+	}
+}
+// 横线
+.x-line{
+	position: relative;
+	&::after{
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2rpx;
+		background: white;
+		transform: scaleY(.5);
+	}
+	&.gray::after{
+		background-color: #F5F5F5;
+	}
+}
+
+// 通用的字体尺寸fs-12 - fs-48, 2递增
+each(range(12,48,2),{
+	.fs-@{value} {
+		font-size: @value*1rpx;
+	}
+})
+
+.fade(@color){
+	background-color: fade(@color, 40)!important;
+}
+
+// 1px 细线, 生成 line-top line-down line-left line-right 四个类
+.line(@position){
+	.if() when (@position = top) , (@position = down){
+		&::before{
+			content: '';
+			position: absolute;
+			background-color: #F5F5F5;
+			transform: scaleY(1);
+			left: 0;
+			right: 0;
+			height: 1px;
+		}
+		.if() when (@position = top){
+			&::before{
+				top: 0;
+			}
+		}
+		.if() when (@position = down){
+			&::before{
+				bottom: 0;
+			}
+		}
+		.if()
+	}
+	.if() when (@position = left) , (@position = right){
+		&::after{
+			content: '';
+			position: absolute;
+			background-color: #F5F5F5;
+			transform: scaleX(1);
+			top: 0;
+			bottom: 0;
+			width: 1px;
+		}
+		.if() when (@position = left){
+			&::after{
+				left:0;
+			}
+		}
+		.if() when (@position = right){
+			&::after{
+				right:0;
+			}
+		}
+		.if()
+	}
+	.line-@{position}{
+		position: relative;
+		.if();
+	}
+	@media (-webkit-min-device-pixel-ratio:2) {
+		.line-@{position}::before{
+			transform: scaleY(1/2);
+		}
+		.line-@{position}::after{
+			transform: scaleX(1/2);
+		}
+	}
+	@media (-webkit-min-device-pixel-ratio:3) {
+		.line-@{position}::before{
+			transform: scaleY(1/3);
+		}
+		.line-@{position}::after{
+			transform: scaleX(1/3);
+		}
+	}
+}
+
+.line(top);
+.line(down);
+.line(left);
+.line(right);
+
+// 生成上下左右边距 10 - 30，5递增，left-10，left-15... 
+each(range(5,40,5),{
+	.left-@{value} {
+		margin-left: @value*1rpx;
+	}
+	.right-@{value} {
+		margin-right: @value*1rpx;
+	}
+	.top-@{value} {
+		margin-top: @value*1rpx;
+	}
+	.down-@{value} {
+		margin-bottom: @value*1rpx;
+	}
+});
+
+each(range(5,30,5),{
+	// 两边内外边距，10-30 10递增
+	.margin-beside-@{value} {
+		margin: 0 @value*1rpx;
+	}
+	.padding-beside-@{value} {
+		padding: 0 @value*1rpx;
+	}
+	// 内外全边距10-30，10递增
+	.padding-@{value} {
+		padding: @value*1rpx;
+	}
+	.margin-@{value} {
+		margin: @value*1rpx;
+	}
+});
+
+// 设计师字重参考
+.txt-light{font-weight: 300;}
+// Regular (Normal、Book、Roman) 都是400这个粗细
+.txt-normal{font-weight: 400;}
+.txt-medium{font-weight: 500;}
+.txt-bold{font-weight: 700;}
+.txt-heavy{font-weight: 900;}
+
+.txt-baseline{vertical-align: baseline;}
+.txt-right{text-align: right;}
+.txt-italic{font-style: italic;}
+
+// 多行省略（不要设padding，用margin代替，padding会导致溢出部分可见）
+.txt-ellipsis{
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	&.row-1{
+		// white-space: nowrap;
+		-webkit-line-clamp: 1;
+	}
+	&.row-2{
+		word-break: break-all;
+		-webkit-line-clamp: 2;
+	}
+	&.row-3{
+		word-break: break-all;
+		-webkit-line-clamp: 3;
+	}
+}
+// 严格换行
+.txt-wrap{
+	word-break: break-all;
+}
+.txt-center{
+	text-align: center;
+}
+
+// 不可见铺满占位，用于需要按钮唤起的功能让button隐形
+.hide-full{
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	opacity: 0;
+	z-index: 99;
+}
+
+// 固定底部的操作按钮
+.post-btn{
+	margin: 0 20rpx;
+	height: 98rpx;
+	font-size: 36rpx;
+	border-radius: 10rpx;
+	color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+// 固定底部
+.fix-bottom{
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: 9;
+	background: #F5F5F5;
+	height: 122rpx;
+}
+
+// 角标
+.badge{
+	display: inline-flex;
+	justify-content: center;
+	&.badge-mini-extra{
+		padding: 5rpx 8rpx;
+		font-size: 24rpx;
+		font-weight: 800;
+	}
+	&.badge-mini{
+		padding: 6rpx 20rpx;
+		font-size: 20rpx;
+	}
+	&.badge-middle{
+		padding: 14rpx 16rpx;
+		font-size: 24rpx;
+	}
+	&.badge-defalut{
+		color: #656565;
+		background: #F9F9F9;
+	}
+	&.badge-radius{
+		border-radius: 8rpx;
+	}
+	&.badge-primary{
+		background: #66D751;
+		color: #fff;
+	}
+	&.badge-orange{
+		background: #FE8563;
+		color: #fff;
+	}
+	&.badge-red-light{
+		background: #FE565F;
+		color: #fff;
+	}
+	&.badge-red{
+		background: #FF2733;
+		color: #fff;
+	}
+}
+// 按钮的线性蓝
+.btn-linear-blue{
+	color: white!important; 
+	background:linear-gradient(90deg,#2A92DB,#0C72BA)!important;
+}
+// 按钮
+.btn{
+	appearance: none;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 6rpx;
+	padding: 6rpx 12rpx;
+	font-size: 24rpx;
+	font-weight: 400;
+	touch-action: manipulation;
+	cursor: pointer;
+	user-select: none;
+	background-image: none;
+	margin: 0;
+	box-sizing: border-box;
+	line-height: 1;
+	border: 2rpx solid transparent;
+	&::after{
+		border: none;
+	}
+	&.btn-fix-width{
+		width: 116rpx;
+		padding: 14rpx 0;
+	}
+	&.btn-mini{
+		padding: 10rpx 20rpx;
+		font-size: 20rpx;
+	}
+	&.btn-default{
+		color: #333;
+		background-color: #fff;
+		border:2rpx solid #ccc;
+	}
+	&.btn-gray{
+		background-color: #C2C2C2;
+		color: #fff;
+	}
+	&.btn-linear-green{
+		color: white;
+		background: linear-gradient(169deg, #71D676, #5FCB55);
+	}
+	&.btn-linear-orange{
+		color: white;
+		background: linear-gradient(169deg, #FF9322, #FFC13D);
+	}
+}
+// 列表
+.list{
+	.list-item{
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20rpx 20rpx;
+		align-items: center;
+		&.list-item-between{
+			justify-content: space-between;
+		}
+	}
+	&.list-middle{
+		.list-item{
+			padding: 40rpx 20rpx;
+		}
+	}
+}
+// .row col-1 col-2 ... col-24 , 栅格布局，等分24份
+.row{
+	each(range(1,24,1),{
+		.col-@{value} {
+			width: @value/24*100%;
+		}
+	})
+}
+
+// 星号, 表示重要或必填项，在指定标签左边生成一个红色*号
+.key{
+	position: relative;
+	&::before{
+		content: '*';
+		color: #FF3934;
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translate(-130%,-50%);
+	}
+}

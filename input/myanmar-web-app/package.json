@@ -1,0 +1,21 @@
+{
+  "name": "yshopmall_uni",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "animate.css": "^3.7.2",
+    "async-validator": "^3.2.4",
+    "dayjs": "^1.8.22",
+    "eruda": "^2.4.1",
+    "vue-ydui": "^1.2.6",
+    "weixin-js-sdk": "^1.6.0"
+  },
+  "devDependencies": {}
+}
