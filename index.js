@@ -3,6 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const {eachFiles,copyDir} = require('./utils')
 const {promisify} = require('util');
+const { assert } = require('console');
 
 const config = {
     inputPath:'./input',    // 输入
@@ -29,8 +30,8 @@ function startTranslate(){
             const data = await readFile(p,{encoding:'utf-8'})
             const content =  await replaceText(data,p)
             writeFile(p,content).then(()=>{
-                console.log(`\ntransform progress :${(count / rest.length * 100).toFixed(2)} %\ntransform file '${p}' done!`) //
                 if(rest.length == ++count) console.log('All transform done!')
+                console.log(`\ntransform progress :${(count / rest.length * 100).toFixed(2)} %\ntransform file '${p}' done!`)
             }).catch(err=>{
                 console.log('writeFile fail: ',err)
             })
@@ -48,9 +49,9 @@ async function replaceText(str,p){
         const length = result[0].length;
         let temp = str.split('')
         let content = ''
+        let transConfig = {to: config.to}
+        if(config.from) transConfig.from=config.from
         try{
-            let transConfig = {to: config.to}
-            if(config.from) transConfig.from=config.from
             content = await translate(result[0], config);
             // console.log(result[0])
         } catch(err){
@@ -65,13 +66,14 @@ async function replaceText(str,p){
 
 async function translate(...rest){
     let content = ''
-    setTimeout(async() => {  // 如果10秒后没有内容返回就重试
-        if(!content){
-            console.log(`translate '${rest[0]}' fail, try again...`)
-            content = await translate(...rest)
-            console.log('再次尝试翻译结果:', content)
+    let second = 0
+    let another = ''
+    let timer = setInterval(async() => {  // 如果10秒后没有内容返回就重试
+        if(!content && ++second>=10) {
+            console.log(`translate '${rest[0]}' timeout, try again...`)
         }
-    }, 1000*10);
+        if(content) clearInterval(timer)
+    }, 1000);
     content = await translateOrigin(...rest)
     return content
 }
