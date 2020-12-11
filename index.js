@@ -1,4 +1,4 @@
-const translate = require('google-translate-api')
+const translateOrigin = require('google-translate-api')
 const fs = require('fs')
 const path = require('path')
 const {eachFiles,copyDir} = require('./utils')
@@ -10,8 +10,8 @@ const config = {
     exclude:/node_modules/g, // 排除目录
     exts:['.html','.vue','.js'],         // 匹配文件扩展名
     fromReg: /[\u4e00-\u4E27\u4E29-\u9fa5]+/g , // 匹配来源文字的正则，默认转换中文
-    from:'zh-cn',           // 翻译来源
-    to:'my'                 // 翻译目标
+    // from:'zh-cn',           // 翻译来源,可不填，以fromReg匹配的语言为来源
+    to:'my'                    // 翻译目标
 }
 
 const readFile = promisify(fs.readFile)
@@ -28,7 +28,6 @@ function startTranslate(){
         rest.map(async p=>{
             const data = await readFile(p,{encoding:'utf-8'})
             const content =  await replaceText(data,p)
-            // console.log(`transform file: ${p}`)
             writeFile(p,content).then(()=>{
                 console.log(`\ntransform progress :${(count / rest.length * 100).toFixed(2)} %\ntransform file '${p}' done!`) //
                 if(rest.length == ++count) console.log('All transform done!')
@@ -42,25 +41,42 @@ function startTranslate(){
     })
 }
 
-async function replaceText(str,path){
+async function replaceText(str,p){
     var result;
+    
     while ((result = config.fromReg.exec(str)) != null)  {
-        // console.log(str)
-        // console.log(result)
         const length = result[0].length;
         let temp = str.split('')
         let content = ''
         try{
-            content = await translate(result[0],{from: config.from, to: config.to});
+            let transConfig = {to: config.to}
+            if(config.from) transConfig.from=config.from
+            content = await translate(result[0], config);
+            // console.log(result[0])
         } catch(err){
             console.log(`google translate fail:`,err)
         }
-        console.log(`\ntransform file : '${path}'`)
         temp.splice(result.index,length, content ? content.text:'')
         str = temp.join('')
+        console.log(`transform file: ${p}\ntranslate '${result[0]}' success!`,)
     }
     return str
 }
+
+async function translate(...rest){
+    let content = ''
+    setTimeout(async() => {  // 如果10秒后没有内容返回就重试
+        if(!content){
+            console.log(`translate '${rest[0]}' fail, try again...`)
+            content = await translate(...rest)
+            console.log('再次尝试翻译结果:', content)
+        }
+    }, 1000*10);
+    content = await translateOrigin(...rest)
+    return content
+}
+
+
 
 startTranslate();
 
