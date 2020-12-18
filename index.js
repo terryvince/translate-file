@@ -5,7 +5,7 @@ const {eachFiles,copyDir,concurrency} = require('./utils')
 const {promisify} = require('util');
 
 const config = {
-    debug:true,
+    debug:false,
     inputPath:path.resolve('./input'),    // 输入
     outputPath:path.resolve('./output'),  // 输出
     exclude:/(node_modules)|(unpackage)/g, // 排除目录
@@ -58,7 +58,7 @@ async function replaceText(str,p){
     let transConfig = {to: config.to}
     if(config.from) transConfig.from=config.from
     // await new Promise (async resolve=>{
-        while ( (result = config.fromReg.exec(str)) )  {
+        while ( (result = config.fromReg.exec(str)) )  {  // 执行一次，游标+1，匹配下一项，而不是没翻译成功的上一项
             const length = result[0].length;
             let temp = str.split('')
             let content = ''
@@ -77,9 +77,9 @@ async function replaceText(str,p){
             if(!content && count==0){
                 console.log(`translate file: ${p}\ntranslate '${result[0]}' fail!\n`)
                 // resolve()
-                // return
+                continue;
             }
-            // console.log(`translate file: ${p}\ntranslate '${result[0]}' success!\n`)
+            config.debug && console.log(`translate file: ${p}\ntranslate '${result[0]}' success!\n`)
             // resolve()
         }
     // })
