@@ -1,22 +1,33 @@
 const fs = require("fs");
 const path = require("path");
 const {promisify} = require('util');
-function async (arr, callback1, callback2) {
-  if (Object.prototype.toString.call(arr) !== '[object Array]') {
-      return callback2(new Error('第一个参数必须为数组'));
-  }
-  if (arr.length === 0)
-      return callback2(null);
-  (function walk(i) {
-      if (i >= arr.length) {
-          return callback2(null);
-      }
-      callback1(arr[i], function () {
-          walk(++i);
-      });
-  })(0);
-}
+
 module.exports = {
+    /**
+     * 并发控制
+     * @param {function[]} arr 任务函数列表，每个函数应该返回一个promise
+     * @param {number} count 每次并发数量
+     * @param {number} delay 每次并发间隔时长
+     * @param {function} callback -每次并发调用的回调，可省
+     * @return {Promise} -返回一个带有响应结果数组的promise
+     */ 
+    async concurrency(arr,count,delay,callback){
+      let curIndex = 0
+      let allResult = []
+      while(arr.length>0){
+          let list = arr.splice(curIndex,count)
+          let result = []
+          try{
+            result = await Promise.all(list.map(fn=>fn())) // 执行任务队列
+          }catch(e){
+            throw new Error(e.message)
+          }
+          allResult = allResult.concat(result)
+          result.map(res=> callback && callback(res)) // 调用回调，返回结果
+          await new Promise(r=>setTimeout(r,delay)) // 休眠指定时长
+      }
+      return allResult
+  },
   // 检查path目录或文件是否存在
   exists(path){
     return new Promise((resolve,reject) => {
@@ -30,28 +41,23 @@ module.exports = {
     })
   },
   // 遍历目录，取得所有文件的path
-  eachFiles(dir, callback) {
-      var filesArr = [];
-      dir = path.join(dir, '/');
-      (function dir(dirpath, fn) {
-          var files = fs.readdirSync(dirpath);
-          async(files, function (item, next) {
-              var info = fs.statSync(dirpath + item);
-              if (info.isDirectory()) {
-                  dir(dirpath + item + '/', function () {
-                      next();
-                  });
-              } else {
-                  filesArr.push(dirpath + item);
-                  callback && callback(dirpath + item);
-                  next();
+  eachFiles(root) {
+      let results = [];
+      +function getfiles(root){
+          let dirs = fs.readdirSync(root);
+          dirs.forEach(name=>{
+              let curPath = path.resolve(root, name);
+              let stats = fs.statSync(curPath);
+              if(stats.isFile()){
+                results.push(curPath);
               }
-          }, function (err) {
-              !err && fn && fn();
-          });
-      })(dir);
-      return filesArr;
-  },
+              if(stats.isDirectory()){
+                getfiles(curPath);
+              }
+          })
+      }(root);
+      return results;
+    },
   // 复制目录
   copyDir(srcDir, outDir, exclude) {
     const { resolve, join } = path;
@@ -60,6 +66,7 @@ module.exports = {
 
     function copy(srcDir, outDir, callback) {
       fs.readdir(srcDir, (err, files) => {
+        files = files.filter(file=>!exclude.test(file))  // 不复制排除目录
         if (err) return callback(err);
         var count = 0;
         var checkEnd = function () {
@@ -76,9 +83,6 @@ module.exports = {
             let fullPath = join(outDir, tempPath);
 
             if (stats.isDirectory()) {
-              if(exclude && exclude.test(fullPath)){
-                return;
-              }
               fs.mkdir(fullPath, function (err) {
                 //创建目录后继续复制该目录下的文件
                 if (err) return callback(err);
