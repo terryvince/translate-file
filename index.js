@@ -13,7 +13,7 @@ const config = {
     fromReg: /[\u4e00-\u4E27\u4E29-\u9fa5]+/g , // 匹配来源文字的正则，默认转换中文
     from:'auto',               // 翻译来源,可不填，以fromReg匹配的语言为来源
     to:'my',                   // 翻译目标
-    retry: 10,                 // 请求失败，重试次数
+    retry: 3,                 // 请求失败，重试次数
     concurrency:{              // 并发控制, 大量发送翻译请求到谷歌会报错429 too many request，ip会被限制访问
         count:1,               // 并发数量
         delay:0             // 并发间隔时长
