@@ -1,4 +1,5 @@
-const translate= require('google-translate-api')
+const translate= require('./libs/google-translate-api')
+const {getProxy} = require('./libs/getProxy')
 const fs = require('fs')
 const path = require('path')
 const {eachFiles,copyDir,concurrency} = require('./utils')
@@ -17,14 +18,23 @@ const config = {
     concurrency:{              // 并发控制, 大量发送翻译请求到谷歌会报错429 too many request，ip会被限制访问
         count:1,               // 并发数量
         delay:0             // 并发间隔时长
-    }
+    },
+    proxyPool:[
+        '181.143.224.93:999',   // ip代理池，可省，默认会从内置爬虫去爬取代理ip, 但检测ip有效性会比较慢
+        '45.248.139.140:8080',
+        '45.71.184.170:999',
+        '91.224.182.49:8080',
+        '188.242.5.172:8080',
+        '185.189.211.70:8080'
+    ]
 }
 
 const readFile = promisify(fs.readFile)
 const writeFile= promisify(fs.writeFile)
-// const map = {}   //
+// let ips = []
 
-function startTranslate(){
+async function startTranslate(){
+    // let ips = await getProxy(config.proxyPool)   // 代理ip不稳定,暂不使用
     copyDir(config.inputPath,config.outputPath,config.exclude).then(()=>{
         return eachFiles(config.outputPath)
     }).then(files=>{

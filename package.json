@@ -12,6 +12,11 @@
   "author": "terryvvan",
   "license": "MIT",
   "dependencies": {
-    "google-translate-api": "^2.3.0"
+    "axios": "^0.21.0",
+    "cheerio": "^1.0.0-rc.3",
+    "configstore": "^5.0.1",
+    "got": "^11.8.1",
+    "safe-eval": "^0.4.1",
+    "tunnel": "^0.0.6"
   }
 }
